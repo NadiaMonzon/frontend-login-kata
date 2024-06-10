@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/js-react"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/js-vue"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/ts-react"
+    schedule:
+      interval: "daily"
