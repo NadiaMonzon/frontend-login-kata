@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
-import "./Login.css";
+import { Button } from "../components/Button.js";
 import { EmailField } from "../components/EmailField.js";
 import { PasswordField } from "../components/PasswordField.js";
 import { Title } from "../components/Title.js";
-import { Button } from "../components/Button.js";
+import { AuthService } from "../services/AuthService.ts";
+import { LocalStorageService } from "../services/LocalStorageService.ts";
 import { translateError } from "../utils/translateError.js";
-import { useNavigate } from "react-router-dom";
+import "./Login.css";
 
-export const Login = () => {
-  const navigate = useNavigate();
+type LoginProps = {
+  navigate: (to: string) => void;
+  authService: AuthService;
+  localStorageService: LocalStorageService
+};
+
+export const Login = ({ navigate, authService, localStorageService }: LoginProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
@@ -27,22 +33,12 @@ export const Login = () => {
           setIsLoading(true);
           setErrorMessage(null);
 
-          fetch("https://backend-login-placeholder.deno.dev/api/users/login", {
-            method: "POST",
-            body: JSON.stringify({ email, password }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.status === "error") {
-                throw new Error(data.code);
-              }
-              return data.payload;
-            })
+          authService
+            .login(email, password)
             .then((payload) => {
-              localStorage.setItem("token", payload.jwt);
+              console.log('token', payload);
+
+              localStorageService.setItem("token", payload);
             })
             .then(() => {
               navigate("/recipes");
