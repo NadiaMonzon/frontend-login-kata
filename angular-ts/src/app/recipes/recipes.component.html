@@ -1,0 +1,11 @@
+<main class="recipes-page">
+  <h1>Recipes</h1>
+  <div class="recipes">
+    <div *ngFor="let recipe of recipes">
+      <app-recipe-card
+        [name]="recipe.name"
+        [ingredients]="recipe.ingredients"
+      ></app-recipe-card>
+    </div>
+  </div>
+</main>

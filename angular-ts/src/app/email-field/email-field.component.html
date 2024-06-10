@@ -1,0 +1,9 @@
+<div class="email-field-container">
+  <label [for]="identifier">{{ label }}</label>
+  <input
+    [id]="identifier"
+    type="email"
+    [value]="value"
+    (input)="changeText($event)"
+  />
+</div>
