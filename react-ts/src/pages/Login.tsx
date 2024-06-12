@@ -3,18 +3,15 @@ import { Button } from "../components/Button.js";
 import { EmailField } from "../components/EmailField.js";
 import { PasswordField } from "../components/PasswordField.js";
 import { Title } from "../components/Title.js";
-import { AuthService } from "../services/AuthService.ts";
-import { LocalStorageService } from "../services/LocalStorageService.ts";
-import { translateError } from "../utils/translateError.js";
+import { LoginUseCase } from "../services/LoginUseCase.ts";
+import { translateError } from "../utils/translateError.ts";
 import "./Login.css";
 
 type LoginProps = {
-  navigate: (to: string) => void;
-  authService: AuthService;
-  localStorageService: LocalStorageService
+  loginUseCase: LoginUseCase;
 };
 
-export const Login = ({ navigate, authService, localStorageService }: LoginProps) => {
+export const Login = ({ loginUseCase }: LoginProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
@@ -33,16 +30,8 @@ export const Login = ({ navigate, authService, localStorageService }: LoginProps
           setIsLoading(true);
           setErrorMessage(null);
 
-          authService
+          loginUseCase
             .login(email, password)
-            .then((payload) => {
-              console.log('token', payload);
-
-              localStorageService.setItem("token", payload);
-            })
-            .then(() => {
-              navigate("/recipes");
-            })
             .catch((error) => {
               setErrorMessage(error.message);
             })
