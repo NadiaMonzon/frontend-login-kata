@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "../components/Button.js";
 import { EmailField } from "../components/EmailField.js";
 import { PasswordField } from "../components/PasswordField.js";
@@ -6,17 +6,29 @@ import { Title } from "../components/Title.js";
 import { LoginUseCase } from "../services/LoginUseCase.ts";
 import { translateError } from "../utils/translateError.ts";
 import "./Login.css";
+import { ErrorBoundary } from "@sentry/react";
 
 type LoginProps = {
   loginUseCase: LoginUseCase;
 };
-
+export const useAsyncError = () => {
+  const [, setError] = useState();
+  const useCallback1 = useCallback(
+    (e: unknown) => {
+      setError(() => {
+        throw e;
+      });
+    },
+    [setError],
+  );
+  return { propagateError: useCallback1 };
+};
 export const Login = ({ loginUseCase }: LoginProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const {propagateError} = useAsyncError()
   useEffect(() => {
     setErrorMessage(null);
   }, [email, password]);
@@ -33,8 +45,13 @@ export const Login = ({ loginUseCase }: LoginProps) => {
           loginUseCase
             .login(email, password)
             .catch((error) => {
-              setErrorMessage(error.message);
-            })
+              if(error.message != null && error.message == 'wrong_email_or_password'){
+                console.log(error)
+                setErrorMessage(error.message)
+                return
+              }
+              throw new Error(error)
+            }).catch(propagateError)
             .finally(() => {
               setIsLoading(false);
             });

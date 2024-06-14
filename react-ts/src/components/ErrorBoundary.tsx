@@ -35,5 +35,5 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 export default ErrorBoundary;
 
 function logErrorToMyService(error: Error, info: React.ErrorInfo) {
-  console.log("Logging error to my service:", error, info);
+  console.error("Logging error to my service:", error, info);
 }
